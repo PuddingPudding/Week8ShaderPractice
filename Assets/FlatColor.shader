@@ -1,52 +1,50 @@
-﻿Shader "Hidden/FlatImage"
+﻿﻿Shader "unityCookie/tut/beginner/1 - Flat Color" 
 {
+	//Interface
 	Properties
 	{
-		_MainTex ("Texture", 2D) = "white" {}
+		_Color("Color", Color) = (1.0,1.0,1.0,1.0)
 	}
-	SubShader
-	{
-		// No culling or depth
-		Cull Off ZWrite Off ZTest Always
 
-		Pass
+		SubShader
 		{
-			CGPROGRAM
-			#pragma vertex vert
-			#pragma fragment frag
-			
-			#include "UnityCG.cginc"
-
-			struct appdata
+			Pass
 			{
-				float4 vertex : POSITION;
-				float2 uv : TEXCOORD0;
-			};
+				CGPROGRAM
+				//pragmas
+				#pragma vertex vert
+				#pragma fragment frag
 
-			struct v2f
-			{
-				float2 uv : TEXCOORD0;
-				float4 vertex : SV_POSITION;
-			};
+				//user defined variables
+				uniform float4 _Color;
 
-			v2f vert (appdata v)
-			{
-				v2f o;
-				o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
-				o.uv = v.uv;
-				return o;
+				//base input structs
+				struct vertexInput
+				{
+					float4 vertex : POSITION;
+				};
+				struct vertexOutput
+				{
+					float4 pos : SV_POSITION;
+				};
+
+				//vertex function
+				vertexOutput vert(vertexInput v)
+				{
+					vertexOutput o;
+					o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
+					return o;
+				}
+
+				//fragment function
+				float4 frag(vertexOutput i) : COLOR
+				{
+					return _Color;
+				}
+
+					ENDCG
 			}
-			
-			sampler2D _MainTex;
-
-			fixed4 frag (v2f i) : SV_Target
-			{
-				fixed4 col = tex2D(_MainTex, i.uv);
-				// just invert the colors
-				col = 1 - col;
-				return col;
-			}
-			ENDCG
 		}
-	}
+		//fallback commented out during development
+		//Fallback "Diffuse"
 }
